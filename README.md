@@ -6,6 +6,6 @@ Machine Learning Project - SEIS 763
 - [One Drive Folder](https://uofstthomasmn-my.sharepoint.com/:f:/r/personal/tran8073_stthomas_edu/Documents/SEIS763%20Project?csf=1&web=1&e=bx7Y6a)
 
 # ToDo
-[ ] Proposal
-[ ] Code
-[ ] Final
+- [ ] Proposal
+- [ ] Code
+- [ ] Final
