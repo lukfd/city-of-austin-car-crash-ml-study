@@ -19,3 +19,23 @@ def extract_timestamp(timestamps: pd.Series) -> pd.DataFrame:
     extracted_features['month_sin'] = np.sin(2 * np.pi * extracted_features['month'] / 12)
     extracted_features['month_cos'] = np.cos(2 * np.pi * extracted_features['month'] / 12)
     return extracted_features
+
+def print_linear_regression_scores(model: str, y, y_pred):
+    from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+
+    mae = mean_absolute_error(y, y_pred)
+    mse = mean_squared_error(y, y_pred)
+    rmse = np.sqrt(mse)
+    r2 = r2_score(y, y_pred)
+    y_mean = np.mean(y)
+    rmse_percentage = (rmse / y_mean) * 100
+
+    print(f"{model} Scores:")
+    print(f"MAE: {mae:.4f} MSE: {mse:.4f} RMSE: {rmse:.4f} RMSE%: {rmse_percentage:.2f}% R^2: {r2:.4f}")
+    return {
+        "MAE": mae,
+        "MSE": mse,
+        "RMSE": rmse,
+        "RMSE%": rmse_percentage,
+        "R^2": r2
+    }
