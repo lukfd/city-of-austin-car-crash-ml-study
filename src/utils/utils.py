@@ -1,5 +1,18 @@
 import pandas as pd
 import numpy as np
+import time
+
+class Timer:
+    def __enter__(self):
+        """Starts the timer."""
+        self.start_time = time.perf_counter()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Stops the timer and calculates the duration."""
+        self.end_time = time.perf_counter()
+        self.duration = self.end_time - self.start_time
+        print(f"Executed in {self.duration:.4f} seconds")
 
 def extract_timestamp(timestamps: pd.Series) -> pd.DataFrame:
     if not isinstance(timestamps, pd.Series):
