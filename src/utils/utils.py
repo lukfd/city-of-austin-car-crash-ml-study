@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import time
+import statsmodels.api as sm
 
 class Timer:
     def __enter__(self):
@@ -13,6 +14,22 @@ class Timer:
         self.end_time = time.perf_counter()
         self.duration = self.end_time - self.start_time
         print(f"Executed in {self.duration:.4f} seconds")
+
+class Pickler:
+    def __init__(self, filename: str):
+        self.filename = filename
+
+    def save(self, obj):
+        """Saves an object to a file using pickle."""
+        import pickle
+        with open(self.filename, 'wb') as f:
+            pickle.dump(obj, f)
+
+    def load(self):
+        """Loads an object from a file using pickle."""
+        import pickle
+        with open(self.filename, 'rb') as f:
+            return pickle.load(f)
 
 def extract_timestamp(timestamps: pd.Series) -> pd.DataFrame:
     if not isinstance(timestamps, pd.Series):
@@ -32,6 +49,27 @@ def extract_timestamp(timestamps: pd.Series) -> pd.DataFrame:
     extracted_features['month_sin'] = np.sin(2 * np.pi * extracted_features['month'] / 12)
     extracted_features['month_cos'] = np.cos(2 * np.pi * extracted_features['month'] / 12)
     return extracted_features
+
+def backwards_elimination(X_train, y_train, significance_level=0.05): 
+    removed_features = []
+    X_opt = X_train.copy()
+    X_opt = sm.add_constant(X_opt)  # Add constant, don't cast to int
+
+    while True: 
+        obj_OLS = sm.OLS(y_train, X_opt).fit()  # <--- y first, X second
+        p_values = obj_OLS.pvalues
+        max_p_value = p_values.max()
+
+        if max_p_value > significance_level:
+            feature_to_remove = p_values.idxmax()
+            if feature_to_remove == 'const':
+                print('Constant term has high p-value. Stopping.')
+                break
+            removed_features.append(feature_to_remove)
+            X_opt.drop(columns=[feature_to_remove], inplace=True)
+        else:
+            break
+    return removed_features
 
 def print_linear_regression_scores(model: str, y, y_pred):
     from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
