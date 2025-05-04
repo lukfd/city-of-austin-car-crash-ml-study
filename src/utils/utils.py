@@ -69,7 +69,7 @@ def backwards_elimination(X_train, y_train, significance_level=0.05):
             X_opt.drop(columns=[feature_to_remove], inplace=True)
         else:
             break
-    return removed_features
+    return X_opt, removed_features
 
 def print_linear_regression_scores(model: str, y, y_pred):
     from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
