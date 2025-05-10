@@ -90,3 +90,32 @@ def print_linear_regression_scores(model: str, y, y_pred):
         "RMSE%": rmse_percentage,
         "R^2": r2
     }
+
+def get_new_scaled_prediction(sample: pd.Series, scaler, numeric_cols: list) -> pd.Series:
+    # Extract only numeric features from the example
+    example_numeric = sample[numeric_cols].values.reshape(1, -1)  # Filter numeric columns and reshape
+
+    # Scale the numeric features
+    example_scaled = scaler.transform(example_numeric)
+
+    # Combine scaled numeric features with the original categorical features
+    new_prediction = sample.copy()
+    new_prediction[numeric_cols] = example_scaled[0]  # Replace numeric columns with scaled values
+
+    return new_prediction
+
+def predict_on_models(new_prediction, models: dict) -> dict:
+    # Ensure new_prediction is a DataFrame with a single row
+    new_prediction_df = new_prediction.to_frame().T if isinstance(new_prediction, pd.Series) else new_prediction
+
+    # Use the DataFrame for prediction
+    results = {}
+    for model in models:
+        print(f"Predicting with {model} model...")
+        predictions = models[model].predict(new_prediction_df)
+        result = predictions[0]
+        results[model] = result
+        print(f"The {model} model predicted: {result * 10000:.2f}")
+        print()
+    
+    return results
